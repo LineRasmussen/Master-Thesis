@@ -1,0 +1,791 @@
+### READING IN DATA FROM GITHUB ###
+  library("foreign")
+    df2007_3 <- as.data.frame(read.spss("https://raw.githubusercontent.com/LineRasmussen/Master_Thesis/master/2007_3rd.sav"))
+    df2007_6 <- as.data.frame(read.spss("https://raw.githubusercontent.com/LineRasmussen/Master_Thesis/master/2007_6th.sav"))
+    df2010_3 <- as.data.frame(read.spss("https://raw.githubusercontent.com/LineRasmussen/Master_Thesis/master/2010_3rd.sav"))
+    df2010_6 <- as.data.frame(read.spss("https://raw.githubusercontent.com/LineRasmussen/Master_Thesis/master/2010_6th.sav"))
+    df2013_3 <- as.data.frame(read.spss("https://raw.githubusercontent.com/LineRasmussen/Master_Thesis/master/2013_3rd.sav"))
+    df2013_6 <- as.data.frame(read.spss("https://raw.githubusercontent.com/LineRasmussen/Master_Thesis/master/2013_6th.sav"))
+
+### READ IN DATA FROM MY OWN COMPUTER ###
+  library("foreign")
+    df2007_3 <- read.spss("/Users/Line/Desktop/Speciale/Data/GitHub data/2007_3rd.sav", to.data.frame=TRUE)
+    df2007_6 <- read.spss("/Users/Line/Desktop/Speciale/Data/GitHub data/2007_6th.sav", to.data.frame=TRUE)
+    df2010_3 <- read.spss("/Users/Line/Desktop/Speciale/Data/GitHub data/2010_3rd.sav", to.data.frame=TRUE)
+    df2010_6 <- read.spss("/Users/Line/Desktop/Speciale/Data/GitHub data/2010_6th.sav", to.data.frame=TRUE)
+    df2013_3 <- read.spss("/Users/Line/Desktop/Speciale/Data/GitHub data/2013_3rd.sav", to.data.frame=TRUE)
+    df2013_6 <- read.spss("/Users/Line/Desktop/Speciale/Data/GitHub data/2013_6th.sav", to.data.frame=TRUE)
+
+### POOLING ALL DATA, obs=111439, var=439 ###
+    df_all <- merge(x=df2007_3, y=df2007_6, all=TRUE)
+    df_all <- merge(x=df_all, y=df2010_3, all=TRUE)
+    df_all <- merge(x=df_all, y=df2010_6, all=TRUE)
+    df_all <- merge(x=df_all, y=df2013_3, all=TRUE)
+    df_all <- merge(x=df_all, y=df2013_6, all=TRUE)
+    
+### CHANGING TO LOWER CASES ###
+  library("dplyr")
+    df2007_3 <- mutate_each(df2007_3, funs(tolower))
+    df2007_6 <- mutate_each(df2007_6, funs(tolower))
+    df2010_3 <- mutate_each(df2010_3, funs(tolower))
+    df2010_6 <- mutate_each(df2010_6, funs(tolower))
+    df2013_3 <- mutate_each(df2013_3, funs(tolower))
+    df2013_6 <- mutate_each(df2013_6, funs(tolower))
+
+############################ CLEANING AND PREPARING DATA PROCESS ############################
+### RENAME VARIABLES ###
+  library("plyr")
+    #df2007_3
+      df2007_3 <- rename(df2007_3,c('P_1'='Male'))
+      df2007_3 <- rename(df2007_3,c('edad'='Age'))
+      df2007_3 <- rename(df2007_3,c('etnia'='Ethnicity'))
+      df2007_3 <- rename(df2007_3,c('nom_muni'='Municipality'))
+      df2007_3 <- rename(df2007_3,c('habilidad_M'='Mathematics_score'))
+      df2007_3 <- rename(df2007_3,c('habilidad_L'='Reading_score'))
+    #df2007_6
+      df2007_6 <- rename(df2007_6,c('P_1'='Male'))
+      df2007_6 <- rename(df2007_6,c('P_2'='Age'))
+      df2007_6 <- rename(df2007_6,c('etnia'='Ethnicity'))
+      df2007_6 <- rename(df2007_6,c('muni'='Municipality'))
+      df2007_6 <- rename(df2007_6,c('habilidad_M'='Mathematics_score'))
+      df2007_6 <- rename(df2007_6,c('habilidad_L'='Reading_score'))
+    #df2010_3
+      df2010_3 <- rename(df2010_3,c('edad_recode'='Age'))
+      df2010_3 <- rename(df2010_3,c('etnia_recode'='Ethnicity'))
+      df2010_3 <- rename(df2010_3,c('nom_muni'='Municipality'))
+      df2010_3 <- rename(df2010_3,c('measure_M'='Mathematics_score'))
+      df2010_3 <- rename(df2010_3,c('measure_L'='Reading_score'))
+    #df2010_6
+      df2010_6 <- rename(df2010_6,c('edad'='Age'))
+      df2010_6 <- rename(df2010_6,c('P3'='Ethnicity'))
+      df2010_6 <- rename(df2010_6,c('nom_muni'='Municipality'))
+      df2010_6 <- rename(df2010_6,c('measure_M'='Mathematics_score'))
+      df2010_6 <- rename(df2010_6,c('measure_L'='Reading_score'))
+    #df2013_3
+      df2013_3 <- rename(df2013_3,c('edad'='Age'))
+      df2013_3 <- rename(df2013_3,c('etnia_recode'='Ethnicity'))
+      df2013_3 <- rename(df2013_3,c('nom_muni'='Municipality'))
+      df2013_3 <- rename(df2013_3,c('measure_MATE'='Mathematics_score'))
+      df2013_3 <- rename(df2013_3,c('measure_LECT'='Reading_score'))
+    #df2013_6
+      df2013_6 <- rename(df2013_6,c('edad'='Age'))
+      df2013_6 <- rename(df2013_6,c('nom_muni'='Municipality'))
+      df2013_6 <- rename(df2013_6,c('measure_M'='Mathematics_score'))
+      df2013_6 <- rename(df2013_6,c('measure_L'='Reading_score'))
+
+### CHANGE CLASS OF VARIABLES ###  
+  #2007_3
+    df2007_3 <- transform(df2007_3, 
+                          P_20 = as.numeric(P_20),
+                          P_14 = as.numeric(P_14),
+                          P_13 = as.numeric(P_13),
+                          P_8_1 = as.numeric(P_8_1),
+                          P_7 = as.numeric(P_7),
+                          Age = as.numeric(Age), 
+                          Male= as.numeric(Male),
+                          Mathematics_score = as.numeric(Mathematics_score),
+                          Reading_score = as.numeric(Reading_score))
+  
+  #2007_6
+    df2007_6 <- transform(df2007_6, 
+                          P_20 = as.numeric(P_20),
+                          P_14 = as.numeric(P_14),
+                          P_13 = as.numeric(P_13),
+                          P_8_1 = as.numeric(P_8_1),
+                          Age = as.numeric(Age), 
+                          Male= as.numeric(Male),
+                          Mathematics_score = as.numeric(Mathematics_score),
+                          Reading_score = as.numeric(Reading_score))
+  
+  #2010_3
+    df2010_3 <- transform(df2010_3, Age = as.numeric(Age), 
+                          Mathematics_score = as.numeric(Mathematics_score),
+                          Reading_score = as.numeric(Reading_score))
+  
+  #2010_6
+    df2010_6 <- transform(df2010_6, Age = as.numeric(Age), 
+                          Mathematics_score = as.numeric(Mathematics_score),
+                          Reading_score = as.numeric(Reading_score))
+  
+  #2013_3
+    df2013_3 <- transform(df2013_3, Age = as.numeric(Age), 
+                          Mathematics_score = as.numeric(Mathematics_score),
+                          Reading_score = as.numeric(Reading_score))
+  
+  #2013_6
+    df2013_6 <- transform(df2013_6, Age = as.numeric(Age), 
+                          Mathematics_score = as.numeric(Mathematics_score),
+                          Reading_score = as.numeric(Reading_score))
+
+### TRIM FOR SPACES ###
+  library("stringr")
+    df2007_3$Municipality <- str_trim(df2007_3$Municipality)
+    df2007_6$Municipality <- str_trim(df2007_6$Municipality)
+    df2010_3$Municipality <- str_trim(df2010_3$Municipality)
+    df2010_6$Municipality <- str_trim(df2010_6$Municipality)
+    df2013_3$Municipality <- str_trim(df2013_3$Municipality)
+    df2013_6$Municipality <- str_trim(df2013_6$Municipality)
+    
+    df2007_3$Ethnicity <- str_trim(df2007_3$Ethnicity)
+    df2007_6$Ethnicity <- str_trim(df2007_6$Ethnicity)
+    df2010_3$Ethnicity <- str_trim(df2010_3$Ethnicity)
+    df2010_6$Ethnicity <- str_trim(df2010_6$Ethnicity)
+    df2013_3$Ethnicity <- str_trim(df2013_3$Ethnicity)
+    
+### CREATING VARIABLES ###
+  #df2007_3
+    df2007_3$Working_beside_studying <- ifelse(df2007_3$P_20==1, 1,0)
+    df2007_3$Mother_read <- ifelse(df2007_3$P_14==1, 1,0)
+    df2007_3$Father_read <- ifelse(df2007_3$P_13==1, 1,0)
+    df2007_3$Help_with_homework <- ifelse(df2007_3$P_8_1==1, 0,1)
+    df2007_3$Rural <- ifelse(df2007_3$Código_Área=="rural", 1,0)
+    df2007_3$Ladino <- ifelse(df2007_3$Ethnicity=="ladino", 1,0)
+    df2007_3$Indigenous <- ifelse(df2007_3$Ladino=="0", 1,0)
+    df2007_3$Year <- 2007
+    df2007_3$Grade <- 3
+    df2007_3$Year_of_birth <- df2007_3$Year - df2007_3$Age
+    df2007_3$Female <-ifelse(df2007_3$Male=="0",1,0)
+  #df2007_6
+    df2007_6$Working_beside_studying <- ifelse(df2007_6$P_20==1, 1,0)
+    df2007_6$Mother_read <- ifelse(df2007_6$P_14==1, 1,0)
+    df2007_6$Father_read <- ifelse(df2007_6$P_13==1, 1,0)
+    df2007_6$Help_with_homework <- ifelse(df2007_6$P_8_2=="no", 0,ifelse(df2007_6$P_8_3=="no", 0,ifelse(df2007_6$P_8_4=="no", 0,ifelse(df2007_6$P_8_5=="no", 0,1))))
+    df2007_6$Rural <- ifelse(df2007_6$cod_area=="rural", 1,0)
+    df2007_6$Ladino <- ifelse(df2007_6$Ethnicity=="ladino", 1,0)
+    df2007_6$Indigenous <- ifelse(df2007_6$Ladino=="0", 1,0)
+    df2007_6$Year <- 2007
+    df2007_6$Grade <- 6
+    df2007_6$Year_of_birth <- df2007_6$Year - df2007_6$Age
+    df2007_6$Female <-ifelse(df2007_6$Male=="0",1,0)
+  #df2010_3
+    df2010_3$Working_beside_studying <- ifelse(df2010_3$P5==1, 1,0)
+    df2010_3$Mother_read <- ifelse(df2010_3$P7==1, 1,0)
+    df2010_3$Father_read <- ifelse(df2010_3$P10==1, 1,0)
+    df2010_3$Help_with_homework <- ifelse(df2010_3$P13==1, 1,0)
+    df2010_3$Rural <- ifelse(df2010_3$COD_ÁREA=="rural", 1,0)
+    df2010_3$Male <- ifelse(df2010_3$sexo_recode=='niño',1,0)
+    df2010_3$Ladino <- ifelse(df2010_3$Ethnicity==2, 1,0)
+    df2010_3$Indigenous <- ifelse(df2010_3$Ladino=="0", 1,0)
+    df2010_3$Year <- 2010
+    df2010_3$Grade <- 3
+    df2010_3$Year_of_birth <- df2010_3$Year - df2010_3$Age
+    df2010_3$Female <-ifelse(df2010_3$Male=="0",1,0)
+  #df2010_6
+    df2010_6$Working_beside_studying <- ifelse(df2010_6$P5=="si", 1,0)
+    df2010_6$Mother_read <- ifelse(df2010_6$P7=="si", 1,0)
+    df2010_6$Father_read <- ifelse(df2010_6$P10=="si", 1,0)
+    df2010_6$Help_with_homework <- ifelse(df2010_6$P13=="si", 1,0)
+    df2010_6$Rural <- ifelse(df2010_6$COD_ÁREA=="rural", 1,0)
+    df2010_6$Male <- ifelse(df2010_6$sexo=='niño',1,0)
+    df2010_6$Ladino <- ifelse(df2010_6$Ethnicity=="ladino", 1,0)
+    df2010_6$Indigenous <- ifelse(df2010_6$Ladino=="0", 1,0)
+    df2010_6$Year <- 2010
+    df2010_6$Grade <- 6
+    df2010_6$Year_of_birth <- df2010_6$Year - df2010_6$Age
+    df2010_6$Female <-ifelse(df2010_6$Male=="0",1,0)
+  #df2013_3
+    df2013_3$Working_beside_studying <- ifelse(df2013_3$P_5=="si", 1,0)
+    df2013_3$Mother_read <- ifelse(df2013_3$P_7=="si", 1,0)
+    df2013_3$Father_read <- ifelse(df2013_3$P_10=="si", 1,0)
+    df2013_3$Help_with_homework <- ifelse(df2013_3$P_13=="si", 1,0)
+    df2013_3$Rural <- ifelse(df2013_3$COD_ÁREA=="rural", 1,0)
+    df2013_3$Male <- ifelse(df2013_3$sexo_recode=="masculino", 1,0)
+    df2013_3$Ladino <- ifelse(df2013_3$Ethnicity==3, 1,0)
+    df2013_3$Indigenous <- ifelse(df2013_3$Ladino=="0", 1,0)
+    df2013_3$Year <- 2013
+    df2013_3$Grade <- 3
+    df2013_3$Year_of_birth <- df2013_3$Year - df2013_3$Age
+    df2013_3$Female <-ifelse(df2013_3$Male=="0",1,0)
+  #df2013_6
+    df2013_6$Working_beside_studying <- ifelse(df2013_6$P_5=="si", 1,0)
+    df2013_6$Mother_read <- ifelse(df2013_6$P_7=="si", 1,0)
+    df2013_6$Father_read <- ifelse(df2013_6$P_10=="si", 1,0)
+    df2013_6$Help_with_homework <- ifelse(df2013_6$P_13=="si", 1,0)
+    df2013_6$Rural <- ifelse(df2013_6$COD_ÁREA=="rural", 1,0)
+    df2013_6$Male <- ifelse(df2013_6$sexo=="masculino", 1,0)
+    df2013_6$Year <- 2013
+    df2013_6$Grade <- 6
+    df2013_6$Year_of_birth <- df2013_6$Year - df2013_6$Age
+    df2013_6$Female <-ifelse(df2013_6$Male=="0",1,0)
+
+### EXCLUDING VARIABLES ###
+  df2007_3_ex<- subset(df2007_3, select=c("Age", 
+                                          "Female",
+                                          "Working_beside_studying",
+                                          'Mother_read',
+                                          'Father_read',
+                                          "Help_with_homework",
+                                          "Mathematics_score", 
+                                          "Reading_score",
+                                          "Year",
+                                          "Grade",
+                                          "Indigenous",
+                                          "Rural",
+                                          "Year_of_birth",
+                                          "Municipality"))
+  df2007_6_ex<- subset(df2007_6, select=c("Age", 
+                                          "Female",
+                                          "Working_beside_studying",
+                                          'Mother_read',
+                                          'Father_read',
+                                          "Help_with_homework",
+                                          "Mathematics_score", 
+                                          "Reading_score",
+                                          "Year",
+                                          "Grade",
+                                          "Indigenous",
+                                          "Rural",
+                                          "Year_of_birth",
+                                          "Municipality"))
+  df2010_3_ex<- subset(df2010_3, select=c("Age", 
+                                          "Female",
+                                          "Working_beside_studying",
+                                          'Mother_read',
+                                          'Father_read',
+                                          "Help_with_homework",
+                                          "Mathematics_score", 
+                                          "Reading_score",
+                                          "Year",
+                                          "Grade",
+                                          "Indigenous",
+                                          "Rural",
+                                          "Year_of_birth",
+                                          "Municipality"))
+  df2010_6_ex<- subset(df2010_6, select=c("Age", 
+                                          "Female",
+                                          "Working_beside_studying",
+                                          'Mother_read',
+                                          'Father_read',
+                                          "Help_with_homework",
+                                          "Mathematics_score", 
+                                          "Reading_score",
+                                          "Year",
+                                          "Grade",
+                                          "Indigenous",
+                                          "Rural",
+                                          "Year_of_birth",
+                                          "Municipality"))
+  df2013_3_ex<- subset(df2013_3, select=c("Age", 
+                                          "Female",
+                                          "Working_beside_studying",
+                                          'Mother_read',
+                                          'Father_read',
+                                          "Help_with_homework",
+                                          "Mathematics_score", 
+                                          "Reading_score",
+                                          "Year",
+                                          "Grade",
+                                          "Indigenous",
+                                          "Rural",
+                                          "Year_of_birth",
+                                          "Municipality"))
+  df2013_6_ex<- subset(df2013_6, select=c("Age", 
+                                          "Female",
+                                          "Working_beside_studying",
+                                          'Mother_read',
+                                          'Father_read',
+                                          "Help_with_homework",
+                                          "Mathematics_score", 
+                                          "Reading_score",
+                                          "Year",
+                                          "Grade",
+                                          "Rural",
+                                          "Year_of_birth",
+                                          "Municipality"))
+
+  ### POOLING DATASETS WITH MISSING VALUES, obs=87059, var=14 ###
+    df_m <- merge(x=df2007_3_ex, y=df2007_6_ex, all=TRUE)
+    df_m <- merge(x=df_m, y=df2010_3_ex, all=TRUE)
+    df_m <- merge(x=df_m, y=df2010_6_ex, all=TRUE)
+    df_m <- merge(x=df_m, y=df2013_3_ex, all=TRUE)
+    df_m <- merge(x=df_m, y=df2013_6_ex, all=TRUE)
+    #Looking for pattern at missing values
+      #Changing "" to NA's in Municipality
+        df_m$Municipality[df_m$Municipality==""] <- NA
+      library(mice)
+        Missing_data <- md.pattern(df_m)
+      library(VIM)
+        aggr_plot <- aggr(df_m, col=c('grey','black'), numbers=TRUE, sortVars=TRUE, labels=names(df_m), cex.axis=.4, cex.lab=0.7, gap=1, ylab=c("Histogram of missing data","Pattern"))
+        #df2007_3_ex
+        df_m$Complete <- complete.cases(df_m)
+        table(df_m$Complete) #33063
+        df_m <- subset(df_m, Complete==TRUE)
+        df_m$Complete <- NULL
+
+### DELETING INCOMPLETE CASES ###
+    #df2007_3_ex
+      #Changing "" to NA's in Municipality
+        df2007_3_ex$Municipality[df2007_3_ex$Municipality==""] <- NA
+      df2007_3_ex$Complete <- complete.cases(df2007_3_ex)
+      table(df2007_3_ex$Complete) #3552
+      df2007_3_ex <- subset(df2007_3_ex, Complete==TRUE)
+      df2007_3_ex$Complete <- NULL
+    #df2007_6_ex
+      #Changing "" to NA's in Municipality
+        df2007_6_ex$Municipality[df2007_6_ex$Municipality==""] <- NA
+      df2007_6_ex$Complete <- complete.cases(df2007_6_ex)
+      table(df2007_6_ex$Complete) #1760
+      df2007_6_ex <- subset(df2007_6_ex, Complete==TRUE)
+      df2007_6_ex$Complete <- NULL
+    #df2010_3_ex
+      #Changing "" to NA's in Municipality
+        df2010_3_ex$Municipality[df2010_3_ex$Municipality==""] <- NA
+      df2010_3_ex$Complete <- complete.cases(df2010_3_ex)
+      table(df2010_3_ex$Complete) #806
+      df2010_3_ex <- subset(df2010_3_ex, Complete==TRUE)
+      df2010_3_ex$Complete <- NULL
+    #df2010_6_ex
+      #Changing "" to NA's in Municipality
+      df2010_6_ex$Municipality[df2010_6_ex$Municipality==""] <- NA
+      df2010_6_ex$Complete <- complete.cases(df2010_6_ex)
+      table(df2010_6_ex$Complete) #3658
+      df2010_6_ex <- subset(df2010_6_ex, Complete==TRUE)
+      df2010_6_ex$Complete <- NULL
+    #df2013_3_ex
+      #Changing "" to NA's in Municipality
+        df2013_3_ex$Municipality[df2013_3_ex$Municipality==""] <- NA
+      df2013_3_ex$Complete <- complete.cases(df2013_3_ex)
+      table(df2013_3_ex$Complete) #4286
+      df2013_3_ex <- subset(df2013_3_ex, Complete==TRUE)
+      df2013_3_ex$Complete <- NULL
+    #df2013_6_ex
+      #Changing "" to NA's in Municipality
+       df2013_6_ex$Municipality[df2013_6_ex$Municipality==""] <- NA
+      df2013_6_ex$Complete <- complete.cases(df2013_6_ex)
+      table(df2013_6_ex$Complete) #492
+      df2013_6_ex <- subset(df2013_6_ex, Complete==TRUE)
+      df2013_6_ex$Complete <- NULL
+
+### POOLING DATASETS, obs=96885, var=14 ###
+  df <- merge(x=df2007_3_ex, y=df2007_6_ex, all=TRUE)
+  df <- merge(x=df, y=df2010_3_ex, all=TRUE)
+  df <- merge(x=df, y=df2010_6_ex, all=TRUE)
+  df <- merge(x=df, y=df2013_3_ex, all=TRUE)
+  df <- merge(x=df, y=df2013_6_ex, all=TRUE)
+
+### REMOVING SPANISH CHARACTERS IN MUNICIPALITY ###
+  df$Municipality <- gsub("\\á", "a", df$Municipality)
+  df$Municipality <- gsub("\\é", "e", df$Municipality)
+  df$Municipality <- gsub("\\í", "i", df$Municipality)
+  df$Municipality <- gsub("\\ó", "o", df$Municipality)
+  df$Municipality <- gsub("\\ú", "ú", df$Municipality)
+  df$Municipality <- gsub("\\ü", "ü", df$Municipality)
+  df$Municipality <- gsub("\\ñ", "n", df$Municipality)
+
+### CREATING TREATMENT AND CONTROLGROUP DUMMIES ###
+  df$T_muni <-ifelse(df$Municipality=="aguacatan"
+                             |df$Municipality=="chiantla"
+                             |df$Municipality=="colotenango"
+                             |df$Municipality=="concepcion huista"
+                             |df$Municipality=="cuilco"
+                             |df$Municipality=="huehuetenango"
+                             |df$Municipality=="jacaltenango"
+                             |df$Municipality=="la democracia"
+                             |df$Municipality=="la libertad"
+                             |df$Municipality=="malacatancito"
+                             |df$Municipality=="nenton"
+                             |df$Municipality=="san antonio huista"
+                             |df$Municipality=="san gaspar ixchil"
+                             |df$Municipality=="san ildefonso ixtahuacan"
+                             |df$Municipality=="san juan atitan"
+                             |df$Municipality=="san juan ixcoy"
+                             |df$Municipality=="san mateo ixtatan"
+                             |df$Municipality=="san miguel acatan"
+                             |df$Municipality=="san pedro necta"
+                             |df$Municipality=="san pedro soloma"
+                             |df$Municipality=="san rafael la independencia"
+                             |df$Municipality=="san rafael petzal"
+                             |df$Municipality=="san sebastian coatan"
+                             |df$Municipality=="san sebastian huehuetenango"
+                             |df$Municipality=="santa ana huista"
+                             |df$Municipality=="santa barbara"
+                             |df$Municipality=="santa cruz barillas"
+                             |df$Municipality=="santa eulalia"
+                             |df$Municipality=="santiago chimaltenango"
+                             |df$Municipality=="tectitan"
+                             |df$Municipality=="todos santos cuchumatan"
+                             |df$Municipality=="ayutla"
+                             |df$Municipality=="catarina"
+                             |df$Municipality=="comitancillo"
+                             |df$Municipality=="concepcion tutuapa"
+                             |df$Municipality=="el quetzal"
+                             |df$Municipality=="el rodeo"
+                             |df$Municipality=="el tumbador"
+                             |df$Municipality=="esquipulas palo gordo"
+                             |df$Municipality=="ixchiguan"
+                             |df$Municipality=="la reforma"
+                             |df$Municipality=="malacatan"
+                             |df$Municipality=="nuevo progreso"
+                             |df$Municipality=="ocos"
+                             |df$Municipality=="pajapita"
+                             |df$Municipality=="rio blanco"
+                             |df$Municipality=="san antonio sacatepequez"
+                             |df$Municipality=="san cristobal cucho"
+                             |df$Municipality=="san jose ojetenam"
+                             |df$Municipality=="san lorenzo"
+                             |df$Municipality=="san marcos"
+                             |df$Municipality=="san miguel ixtahuacan"
+                             |df$Municipality=="san pablo"
+                             |df$Municipality=="san pedro sacatepequez"
+                             |df$Municipality=="san rafael pie de la cuesta"
+                             |df$Municipality=="sibinal"
+                             |df$Municipality=="sipacapa"
+                             |df$Municipality=="tacana"
+                             |df$Municipality=="tajumulco"
+                             |df$Municipality=="tejutla"
+                             |df$Municipality=="la blanca"
+                             |df$Municipality=="canilla"
+                             |df$Municipality=="chajul"
+                             |df$Municipality=="chicaman"
+                             |df$Municipality=="chiche"
+                             |df$Municipality=="chichicastenango"
+                             |df$Municipality=="chinique"
+                             |df$Municipality=="cunen"
+                             |df$Municipality=="joyabaj"
+                             |df$Municipality=="nebaj"
+                             |df$Municipality=="sacapulas"
+                             |df$Municipality=="patzite"
+                             |df$Municipality=="pachalum"
+                             |df$Municipality=="ixcan"
+                             |df$Municipality=="san andres sajcabaja"
+                             |df$Municipality=="san antonio ilotenango"
+                             |df$Municipality=="san bartolome jocotenango"
+                             |df$Municipality=="san juan cotzal"
+                             |df$Municipality=="san pedro jocopilas"
+                             |df$Municipality=="santa cruz del quiche"
+                             |df$Municipality=="uspantan"
+                             |df$Municipality=="zacualpa"
+                             |df$Municipality=="momostenango"
+                             |df$Municipality=="san andres xecul"
+                             |df$Municipality=="san bartolo"
+                             |df$Municipality=="san cristobal totonicapan"
+                             |df$Municipality=="san francisco el alto"
+                             |df$Municipality=="santa lucia la reforma"
+                             |df$Municipality=="santa maria chiquimula"
+                             |df$Municipality=="totonicapan"
+                             |df$Municipality=="coban"
+                             |df$Municipality=="san pedro carcha"
+                             |df$Municipality=="san juan chamelco"
+                             |df$Municipality=="san cristobal verapaz"
+                             |df$Municipality=="tactic"
+                             |df$Municipality=="tucuru"
+                             |df$Municipality=="tamahu"
+                             |df$Municipality=="panzos"
+                             |df$Municipality=="senahu"
+                             |df$Municipality=="cahabon"
+                             |df$Municipality=="lanquin"
+                             |df$Municipality=="chahal"
+                             |df$Municipality=="fray bartolome de las casas"
+                             |df$Municipality=="chisec"
+                             |df$Municipality=="santa cruz verapaz"
+                             |df$Municipality=="santa catalina la tinta"
+                             |df$Municipality=="raxruha"
+                             |df$Municipality=="puerto barrios"
+                             |df$Municipality=="livingston"
+                             |df$Municipality=="el estor"
+                             |df$Municipality=="morales"
+                             |df$Municipality=="los amates"
+                             |df$Municipality=="dolores"
+                             |df$Municipality=="el chal"
+                             |df$Municipality=="la libertad"
+                             |df$Municipality=="melchor de mencos"
+                             |df$Municipality=="poptun"
+                             |df$Municipality=="san benito"
+                             |df$Municipality=="san luis"
+                             |df$Municipality=="sayaxche"
+                             |df$Municipality=="las cruces"
+                             |df$Municipality=="cubulco"
+                             |df$Municipality=="santa cruz el chol"
+                             |df$Municipality=="purulha"
+                             |df$Municipality=="rabinal"
+                             |df$Municipality=="salama"
+                             |df$Municipality=="san miguel chicaj"
+                             |df$Municipality=="chimaltenango"
+                             |df$Municipality=="san jose poaquil"
+                             |df$Municipality=="san martin jilotepeque"
+                             |df$Municipality=="san juan comalapa"
+                             |df$Municipality=="santa apolonia"
+                             |df$Municipality=="tecpan guatemala"
+                             |df$Municipality=="patzun"
+                             |df$Municipality=="pochuta"
+                             |df$Municipality=="patzicia"
+                             |df$Municipality=="santa cruz balanya"
+                             |df$Municipality=="acatenango"
+                             |df$Municipality=="san pedro yepocapa"
+                             |df$Municipality=="san andres itzapa"
+                             |df$Municipality=="parramos"
+                             |df$Municipality=="zaragoza"
+                             |df$Municipality=="el tejar"
+                             |df$Municipality=="el jicaro"
+                             |df$Municipality=="guastatoya"
+                             |df$Municipality=="morazan"
+                             |df$Municipality=="sanarate"
+                             |df$Municipality=="sansare"
+                             |df$Municipality=="san agustin acasaguastlan"
+                             |df$Municipality=="san antonio la paz"
+                             |df$Municipality=="san cristobal acasaguastlan"
+                             |df$Municipality=="jalapa"
+                             |df$Municipality=="mataquescuintla"
+                             |df$Municipality=="monjas"
+                             |df$Municipality=="san carlos alzatate"
+                             |df$Municipality=="san luis jilotepeque"
+                             |df$Municipality=="san pedro pinula"
+                             |df$Municipality=="san manuel chaparron"
+                             |df$Municipality=="chiquimula"
+                             |df$Municipality=="ciudad de chiquimula"
+                             |df$Municipality=="jocotan"
+                             |df$Municipality=="esquipulas"
+                             |df$Municipality=="camotan"
+                             |df$Municipality=="quezaltepeque"
+                             |df$Municipality=="olopa"
+                             |df$Municipality=="ipala"
+                             |df$Municipality=="san juan ermita"
+                             |df$Municipality=="concepcion las minas"
+                             |df$Municipality=="san jacinto"
+                             |df$Municipality=="san jose la arada"
+                             |df$Municipality=="agua blanca"
+                             |df$Municipality=="asuncion mita"
+                             |df$Municipality=="atescatempa"
+                             |df$Municipality=="comapa"
+                             |df$Municipality=="conguaco"
+                             |df$Municipality=="el adelanto"
+                             |df$Municipality=="el progreso"
+                             |df$Municipality=="jalpatagua"
+                             |df$Municipality=="jerez"
+                             |df$Municipality=="jutiapa"
+                             |df$Municipality=="moyuta"
+                             |df$Municipality=="pasaco"
+                             |df$Municipality=="quesada"
+                             |df$Municipality=="san jose acatempa"
+                             |df$Municipality=="santa catarina mita"
+                             |df$Municipality=="yupiltepeque"
+                             |df$Municipality=="zapotitlan"
+                             |df$Municipality=="barberena"
+                             |df$Municipality=="casillas"
+                             |df$Municipality=="chiquimulilla"
+                             |df$Municipality=="cuilapa"
+                             |df$Municipality=="guazacapan"
+                             |df$Municipality=="nueva santa rosa"
+                             |df$Municipality=="oratorio"
+                             |df$Municipality=="pueblo nuevo vinas"
+                             |df$Municipality=="san juan tecuaco"
+                             |df$Municipality=="san rafael las flores"
+                             |df$Municipality=="santa cruz naranjo"
+                             |df$Municipality=="santa maria ixhuatan"
+                             |df$Municipality=="taxisco"
+                             |df$Municipality=="chuarrancho"
+                             |df$Municipality=="palencia"
+                             |df$Municipality=="san juan sacatepequez"
+                             |df$Municipality=="san pedro ayampuc"
+                             |df$Municipality=="san pedro sacatepequez"
+                             |df$Municipality=="san raymundo"
+                             |df$Municipality=="solola"
+                             |df$Municipality=="concepcion"
+                             |df$Municipality=="nahuala"
+                             |df$Municipality=="panajachel"
+                             |df$Municipality=="san andres semetabaj"
+                             |df$Municipality=="san antonio palopo"
+                             |df$Municipality=="san jose chacaya"
+                             |df$Municipality=="san juan la laguna"
+                             |df$Municipality=="san lucas toliman"
+                             |df$Municipality=="san marcos la laguna"
+                             |df$Municipality=="san pablo la laguna"
+                             |df$Municipality=="san pedro la laguna"
+                             |df$Municipality=="santa catarina ixtahuacan"
+                             |df$Municipality=="santa catarina palopo"
+                             |df$Municipality=="santa clara la laguna"
+                             |df$Municipality=="santa cruz la laguna"
+                             |df$Municipality=="santa lucia utatlan"
+                             |df$Municipality=="santa maria visitacion"
+                             |df$Municipality=="santiago atitlan"
+                             |df$Municipality=="cabrican"
+                             |df$Municipality=="coatepeque"
+                             |df$Municipality=="colomba"
+                             |df$Municipality=="el palmar"
+                             |df$Municipality=="flores costa cuca"
+                             |df$Municipality=="genova"
+                             |df$Municipality=="huitan"
+                             |df$Municipality=="la esperanza"
+                             |df$Municipality=="palestina de los altos"
+                             |df$Municipality=="salcaja"
+                             |df$Municipality=="san martin sacatepequez"
+                             |df$Municipality=="san mateo"
+                             |df$Municipality=="champerico"
+                             |df$Municipality=="el asintal"
+                             |df$Municipality=="nuevo san carlos"
+                             |df$Municipality=="san andres villa seca"
+                             |df$Municipality=="chicacao"
+                             |df$Municipality=="cuyotenango"
+                             |df$Municipality=="mazatenango"
+                             |df$Municipality=="patulul"
+                             |df$Municipality=="san antonio suchitepequez"
+                             |df$Municipality=="san bernardino"
+                             |df$Municipality=="san gabriel"
+                             |df$Municipality=="san jose la maquina"
+                             |df$Municipality=="san juan bautista"
+                             |df$Municipality=="san miguel panan"
+                             |df$Municipality=="santo domingo suchitepequez"
+                             |df$Municipality=="guanagazapa"
+                             |df$Municipality=="iztapa"
+                             |df$Municipality=="la democracia"
+                             |df$Municipality=="la gomera"
+                             |df$Municipality=="masagua"
+                             |df$Municipality=="nueva concepcion"
+                             |df$Municipality=="palin"
+                             |df$Municipality=="san jose"
+                             |df$Municipality=="santa lucia cotzumalguapa"
+                             |df$Municipality=="sipacate"
+                             |df$Municipality=="siquinala"
+                             |df$Municipality=="tiquisate"
+                             |df$Municipality=="alotenango"
+                             |df$Municipality=="ciudad vieja"
+                             |df$Municipality=="jocotenango"
+                             |df$Municipality=="magdalena milpas altas"
+                             |df$Municipality=="pastores"
+                             |df$Municipality=="santa maria de jesus"
+                             |df$Municipality=="santo domingo xenacoj"
+                             |df$Municipality=="sumpango",1,0)
+  
+  df$C_muni <-ifelse(df$Municipality=="antigua guatemala"
+                           |df$Municipality=="san antonio aguas calientes"
+                           |df$Municipality=="san bartolome milpas altas"
+                           |df$Municipality=="san lucas sacatepequez"
+                           |df$Municipality=="san miguel duenas"
+                           |df$Municipality=="santiago sacatepequez"
+                           |df$Municipality=="santa catarina barahona"
+                           |df$Municipality=="santa lucia milpas altas"
+                           |df$Municipality=="flores"
+                           |df$Municipality=="san andres"
+                           |df$Municipality=="san francisco"
+                           |df$Municipality=="san jose"
+                           |df$Municipality=="santa ana"
+                           |df$Municipality=="granados"
+                           |df$Municipality=="san jeronimo"
+                           |df$Municipality=="santa rosa de lima"
+                           |df$Municipality=="almolonga"
+                           |df$Municipality=="cajola"
+                           |df$Municipality=="cantel"
+                           |df$Municipality=="concepcion chiquirichapa"
+                           |df$Municipality=="olintepeque"
+                           |df$Municipality=="quetzaltenango"
+                           |df$Municipality=="san carlos sija"
+                           |df$Municipality=="san francisco la union"
+                           |df$Municipality=="san juan ostuncalco"
+                           |df$Municipality=="san miguel siguila"
+                           |df$Municipality=="sibilia"
+                           |df$Municipality=="zunil"
+                           |df$Municipality=="amatitlan"
+                           |df$Municipality=="chinautla"
+                           |df$Municipality=="fraijanes"
+                           |df$Municipality=="guatemala city"
+                           |df$Municipality=="mixco"
+                           |df$Municipality=="palencia"
+                           |df$Municipality=="san miguel petapa"
+                           |df$Municipality=="san jose del golfo"
+                           |df$Municipality=="san jose pinula"
+                           |df$Municipality=="santa catarina pinula"
+                           |df$Municipality=="villa canales"
+                           |df$Municipality=="villa nueva"
+                           |df$Municipality=="retalhuleu"
+                           |df$Municipality=="san felipe"
+                           |df$Municipality=="san martin zapotitlan"
+                           |df$Municipality=="san sebastian"
+                           |df$Municipality=="santa cruz mulua"
+                           |df$Municipality=="pueblo nuevo"
+                           |df$Municipality=="rio bravo"
+                           |df$Municipality=="samayac"
+                           |df$Municipality=="san francisco zapotitlan"
+                           |df$Municipality=="san jose el idolo"
+                           |df$Municipality=="san lorenzo"
+                           |df$Municipality=="san pablo jocopilas"
+                           |df$Municipality=="santa barbara"
+                           |df$Municipality=="santo tomas la union"
+                           |df$Municipality=="zunilito"
+                           |df$Municipality=="escuintla"
+                           |df$Municipality=="san vicente pacaya"
+                           |df$Municipality=="la antigua guatemala"
+                           |df$Municipality=="san antonio aguas calientes"
+                           |df$Municipality=="san bartolome milpas altas"
+                           |df$Municipality=="san lucas sacatepequez"
+                           |df$Municipality=="san miguel duenas"
+                           |df$Municipality=="santa catarina barahona"
+                           |df$Municipality=="santa lucia milpas altas"
+                           |df$Municipality=="santiago sacatepequez",1,0)
+  
+### CREATING TREATMENT VARIABLE FOR  FOR 2010 AND 2013 ###
+  df$T2010 <- ifelse(df$T_muni==1 & df$Year==2010,1,0)
+  df$T_only_2013 <- ifelse(df$T_muni==1 & df$Year==2013,1,0)
+  df$T2013 <- ifelse(df$T2010==1 | df$T_only_2013==1,1,0)
+
+  df$C2010 <- ifelse(df$T2010==0,1,0)
+  df$C_only_2013 <- ifelse(df$T2013==0,1,0)
+  df$C2013 <- ifelse(df$C2010==1 & df$C_only_2013==1,1,0)
+
+### DELETING VARIABLES NOT NEEDED FOR THE EMPIRICAL ANALYSIS###
+  df$T_only_2013 <- NULL
+  df$C_only_2013 <- NULL
+  df$T_muni <- NULL
+  df$C_muni <- NULL
+
+### CLEANING DATA ###
+  #Removing outliers
+    df <- subset(df, Year_of_birth>=1991)
+    df <- subset(df, Year_of_birth<=2006)
+    df <- subset(df, Age>6)
+  #The scale for grade is from -5 to 5
+    df <- subset(df, Mathematics_score>-5)
+    df <- subset(df, Mathematics_score<5)
+    df <- subset(df, Reading_score>-5)
+    df <- subset(df, Reading_score<5)
+
+### CREATING VARIABLES ###
+#Year_in_program
+  df$Year_in_program <- ifelse(df$Year_of_birth==1993 & df$Year==2010, 1,
+                        ifelse(df$Year_of_birth==1994 & df$Year==2010, 2,    
+                        ifelse(df$Year_of_birth==1995 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==1996 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==1997 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==1998 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==1999 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==2000 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==2001 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==2002 & df$Year==2010, 3,    
+                        ifelse(df$Year_of_birth==2003 & df$Year==2010, 2,    
+                        ifelse(df$Year_of_birth==2004 & df$Year==2010, 1,    
+                        ifelse(df$Year_of_birth==1993 & df$Year==2013, 1,    
+                        ifelse(df$Year_of_birth==1994 & df$Year==2013, 2,    
+                        ifelse(df$Year_of_birth==1995 & df$Year==2013, 3,    
+                        ifelse(df$Year_of_birth==1996 & df$Year==2013, 4,    
+                        ifelse(df$Year_of_birth==1997 & df$Year==2013, 5,    
+                        ifelse(df$Year_of_birth==1998 & df$Year==2013, 5,    
+                        ifelse(df$Year_of_birth==1999 & df$Year==2013, 5,    
+                        ifelse(df$Year_of_birth==2000 & df$Year==2013, 4,    
+                        ifelse(df$Year_of_birth==2001 & df$Year==2013, 5,    
+                        ifelse(df$Year_of_birth==2003 & df$Year==2013, 4,    
+                        ifelse(df$Year_of_birth==2004 & df$Year==2013, 3,    
+                        ifelse(df$Year_of_birth==2005 & df$Year==2013, 2,    
+                        ifelse(df$Year_of_birth==2006 & df$Year==2013, 1, 0)))))))))))))))))))))))))
+
+#Municipality_no
+  df <- transform(df,Municipality_no=as.numeric(factor(Municipality)))
+### CREATING DATASET FOR THE EMPIRICAL ANALYSIS ###
+  #Creating data sets for 3rd and 6th grade
+    df_3 <- subset(df, Grade==3) #obs=50713, var=20
+    df_6 <- subset(df, Grade==6) #obs=45929, var=20
+  #Creating dataset only for 2007 and 2010
+    df_2010_3 <- subset(df_3, Year<=2010)
+    df_2010_6 <- subset(df_6, Year<=2010)
+    df_2010 <-subset(df, Year<=2010)
+
+### SAVES DATA AS dta FILE ###
+  library("haven")
+    write_dta(df, "/Users/Line/Desktop/Speciale/Data/GitHub data/df_empirical_analysis.dta")
+    write_dta(df_2010, "/Users/Line/Desktop/Speciale/Data/GitHub data/df_2010_empirical_analysis.dta")
+    write_dta(df_3, "/Users/Line/Desktop/Speciale/Data/GitHub data/df_3_empirical_analysis.dta")
+    write_dta(df_6, "/Users/Line/Desktop/Speciale/Data/GitHub data/df_6_empirical_analysis.dta")
+    write_dta(df_2010_3, "/Users/Line/Desktop/Speciale/Data/GitHub data/df_2010_3_empirical_analysis.dta")
+    write_dta(df_2010_6, "/Users/Line/Desktop/Speciale/Data/GitHub data/df_2010_6_empirical_analysis.dta")
+
+
+
+
